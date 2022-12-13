@@ -1,11 +1,13 @@
-package com.leihao.wiki;
+package com.leihao.wiki.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.ConfigurableEnvironment;
 
+@ComponentScan("com.leihao.wiki")
 @SpringBootApplication
 public class WikiApplication {
 
@@ -15,7 +17,7 @@ public class WikiApplication {
         SpringApplication app=new SpringApplication(WikiApplication.class);
         ConfigurableEnvironment environment = app.run(args).getEnvironment();
         LOG.info("启动成功！！！");
-        LOG.info("地址： \thttp://127.0.0.1 ：{}",environment.getProperty("server.port"));
+        LOG.info("地址： \thttp://127.0.0.1:{}",environment.getProperty("server.port"));
     }
 
 }
