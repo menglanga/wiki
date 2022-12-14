@@ -2,6 +2,7 @@ package com.leihao.wiki.controller;
 
 import com.leihao.wiki.domain.Demo;
 import com.leihao.wiki.domain.Ebook;
+import com.leihao.wiki.response.CommonResponse;
 import com.leihao.wiki.service.DemoService;
 import com.leihao.wiki.service.EbookService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +21,11 @@ public class EbookController {
 
 
     @GetMapping("/list")
-    public List<Ebook> list(){
-        return ebookService.list();
+    public CommonResponse list(){
+        CommonResponse<List<Ebook>> response = new CommonResponse<>();
+        List<Ebook> ebookList = ebookService.list();
+        response.setData(ebookList);
+        return response;
     }
 
 }
