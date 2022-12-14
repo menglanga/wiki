@@ -1,9 +1,9 @@
 package com.leihao.wiki.controller;
 
-import com.leihao.wiki.domain.Demo;
 import com.leihao.wiki.domain.Ebook;
+import com.leihao.wiki.request.EbookRequest;
 import com.leihao.wiki.response.CommonResponse;
-import com.leihao.wiki.service.DemoService;
+import com.leihao.wiki.response.EbookResponse;
 import com.leihao.wiki.service.EbookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,9 +21,9 @@ public class EbookController {
 
 
     @GetMapping("/list")
-    public CommonResponse list(){
-        CommonResponse<List<Ebook>> response = new CommonResponse<>();
-        List<Ebook> ebookList = ebookService.list();
+    public CommonResponse list(EbookRequest request){
+        CommonResponse<List<EbookResponse>> response = new CommonResponse<>();
+        List<EbookResponse> ebookList = ebookService.list(request);
         response.setData(ebookList);
         return response;
     }
