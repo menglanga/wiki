@@ -11,6 +11,7 @@ import com.leihao.wiki.util.CopyUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,9 @@ public class EbookService {
     public List<EbookResponse> list(EbookRequest  request){
         EbookExample ebookExample = new EbookExample();
         EbookExample.Criteria criteria = ebookExample.createCriteria();
-        criteria.andNameLike("%"+request.getName()+"%");
+        if (!ObjectUtils.isEmpty(request.getName())){
+            criteria.andNameLike("%"+request.getName()+"%");
+        }
         List<Ebook> ebookList = ebookMapper.selectByExample(ebookExample);
         List<EbookResponse> ebookResponseList=new ArrayList<>();
         for (Ebook ebook : ebookList){
