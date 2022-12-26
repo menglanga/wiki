@@ -9,6 +9,7 @@ import com.leihao.wiki.mapper.DemoMapper;
 import com.leihao.wiki.mapper.EbookMapper;
 import com.leihao.wiki.request.EbookRequest;
 import com.leihao.wiki.response.EbookResponse;
+import com.leihao.wiki.response.PageResponse;
 import com.leihao.wiki.util.CopyUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,22 +30,24 @@ public class EbookService {
     @Autowired
     private EbookMapper ebookMapper;
 
-    public List<EbookResponse> list(EbookRequest  request){
+    public PageResponse<EbookResponse> list(EbookRequest  request){
         EbookExample ebookExample = new EbookExample();
         EbookExample.Criteria criteria = ebookExample.createCriteria();
         if (!ObjectUtils.isEmpty(request.getName())){
             criteria.andNameLike("%"+request.getName()+"%");
         }
-        PageHelper.startPage(1,3);
+        PageHelper.startPage(request.getPageNum(),request.getPageSize());
         List<Ebook> ebookList = ebookMapper.selectByExample(ebookExample);
 
         PageInfo<Ebook>pageInfo=new PageInfo<>(ebookList);
         LOG.info("总行数：{}",pageInfo.getTotal());
-        LOG.info("总页数：{}",pageInfo.getPages());
 
         List<EbookResponse> ebookResponseList= CopyUtil.copyList(ebookList, EbookResponse.class);
 
+        PageResponse<EbookResponse> response = new PageResponse<>();
+        response.setTotal(pageInfo.getTotal());
+        response.setList(ebookResponseList);
 
-        return ebookResponseList;
+        return response;
     }
 }
