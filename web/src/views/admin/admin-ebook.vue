@@ -16,20 +16,28 @@
         </template>
         <template v-slot:action="{ text, record }">
           <a-space size="small">
-            <a-button type="primary">编辑</a-button>
+            <a-button type="primary" @click="edit">编辑</a-button>
             <a-button type="danger">删除</a-button>
           </a-space>
         </template>
       </a-table>
     </a-layout-content>
   </a-layout>
+  <a-modal
+          title="电子书表单"
+          v-model:visible="modelVisible"
+          :confirm-loading="modelLoading"
+          @ok="handleModelOk"
+  >
+    <p>test</p>
+  </a-modal>
 </template>
 
 <script lang="ts">
-  import {defineComponent,onMounted,ref} from 'vue';
-  import axios from 'axios';
+    import {defineComponent, onMounted, ref} from 'vue';
+    import axios from 'axios';
 
-  export  default defineComponent({
+    export  default defineComponent({
     name: 'AdminEbook',
     setup(){
       const ebooks=ref();
@@ -106,14 +114,41 @@
         });
       };
 
+      //表单
+      const modelVisible = ref(false);
+      const modelLoading = ref(false);
+
+      const handleModelOk = () => {
+        modelLoading.value = true;
+        setTimeout(() => {
+          modelVisible.value = false;
+          modelLoading.value = false;
+        }, 2000);
+      };
+
+
+      //编辑
+      const edit=()=>{
+        modelVisible.value=true;
+      };
+
       onMounted(()=>{
         handleQuery({
           pageNum: 1,
           pageSize: pagination.value.pageSize
         });
-      })
+      });
 
-      return{ebooks,pagination,columns,loading,handleTableChange}
-    }
+      return{
+          ebooks,
+          pagination,
+          columns,
+          loading,
+          handleTableChange,
+          edit,
+          modelVisible,
+          modelLoading,
+          handleModelOk}
+      }
     })
 </script>
