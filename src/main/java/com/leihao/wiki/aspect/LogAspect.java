@@ -1,7 +1,6 @@
 package com.leihao.wiki.aspect;
 
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.PropertyPreFilter;
 import com.alibaba.fastjson.support.spring.PropertyPreFilters;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;

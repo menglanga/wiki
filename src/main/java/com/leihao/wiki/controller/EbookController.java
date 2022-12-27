@@ -1,6 +1,5 @@
 package com.leihao.wiki.controller;
 
-import com.leihao.wiki.domain.Ebook;
 import com.leihao.wiki.request.EbookRequest;
 import com.leihao.wiki.response.CommonResponse;
 import com.leihao.wiki.response.EbookResponse;
@@ -11,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+
 
 @RestController
 @RequestMapping("/ebook")
