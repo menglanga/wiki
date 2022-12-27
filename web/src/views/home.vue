@@ -77,17 +77,17 @@ import axios from 'axios'
 
 const listData: any = [];
 
-for (let i = 0; i < 23; i++) {
-  listData.push({
-    href: 'https://www.antdv.com/',
-    title: `ant design vue part ${i}`,
-    avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-    description:
-            'Ant Design, a design language for background applications, is refined by Ant UED Team.',
-    content:
-            'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
-  });
-}
+// for (let i = 0; i < 23; i++) {
+//   listData.push({
+//     href: 'https://www.antdv.com/',
+//     title: `ant design vue part ${i}`,
+//     avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
+//     description:
+//             'Ant Design, a design language for background applications, is refined by Ant UED Team.',
+//     content:
+//             'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
+//   });
+// }
 
 export default defineComponent({
   name: 'Home',
@@ -97,16 +97,21 @@ export default defineComponent({
     const ebooks1=reactive({books:[]})
 
     onMounted(()=>{
-      axios.get("/ebook/list").then((response)=>{
+      axios.get("/ebook/list",{
+        params:{
+          pageNum: 1,
+          pageSize: 1000
+        }
+      }).then((response)=>{
         const data=response.data;
-        ebooks.value=data.data
-        ebooks1.books=data.data
+        ebooks.value=data.data.list
+        //ebooks1.books=data.data
       })
     })
     return {
       ebooks,
-      ebooks2:toRef(ebooks1,"books"),
-      listData,
+      // ebooks2:toRef(ebooks1,"books"),
+      // listData,
       pagination : {
         onChange: (page: any) => {
           console.log(page);
