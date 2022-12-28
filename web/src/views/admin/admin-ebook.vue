@@ -137,10 +137,18 @@
 
       const handleModelOk = () => {
         modelLoading.value = true;
-        setTimeout(() => {
-          modelVisible.value = false;
-          modelLoading.value = false;
-        }, 2000);
+        axios.post("/ebook/save",ebook.value).then((response)=>{
+          const data=response.data;
+          if (data.success){
+            modelVisible.value=false;
+            modelLoading.value=false;
+            //重新加载列表
+            handleQuery({
+              pageNum: pagination.value.current,
+              pageSize: pagination.value.pageSize
+            });
+          }
+        });
       };
 
 

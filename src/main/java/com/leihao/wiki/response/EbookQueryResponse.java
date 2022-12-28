@@ -1,6 +1,6 @@
 package com.leihao.wiki.response;
 
-public class EbookResponse {
+public class EbookQueryResponse {
 
     private Long id;
 

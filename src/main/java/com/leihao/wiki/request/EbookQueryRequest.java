@@ -2,7 +2,7 @@ package com.leihao.wiki.request;
 
 import com.github.pagehelper.PageHelper;
 
-public class EbookRequest extends PageRequest {
+public class EbookQueryRequest extends PageRequest {
     private Long id;
 
     private String name;
