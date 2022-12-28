@@ -10,12 +10,14 @@ import com.leihao.wiki.request.EbookSaveRequest;
 import com.leihao.wiki.response.EbookQueryResponse;
 import com.leihao.wiki.response.PageResponse;
 import com.leihao.wiki.util.CopyUtil;
+import com.leihao.wiki.util.SnowFlake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 @Service
@@ -26,6 +28,9 @@ public class EbookService {
 
     @Autowired
     private EbookMapper ebookMapper;
+
+    @Resource
+    private SnowFlake snowFlake;
 
     public PageResponse<EbookQueryResponse> list(EbookQueryRequest request){
         EbookExample ebookExample = new EbookExample();
@@ -51,6 +56,7 @@ public class EbookService {
     public void save(EbookSaveRequest request) {
         Ebook ebook = CopyUtil.copy(request, Ebook.class);
         if (ObjectUtils.isEmpty(request.getId())){
+            ebook.setId(snowFlake.nextId());
             ebookMapper.insert(ebook);
         }else {
             ebookMapper.updateByPrimaryKey(ebook);
