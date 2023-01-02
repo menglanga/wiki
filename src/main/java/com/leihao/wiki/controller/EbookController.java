@@ -9,6 +9,8 @@ import com.leihao.wiki.service.EbookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 
 @RestController
 @RequestMapping("/ebook")
@@ -19,7 +21,7 @@ public class EbookController {
 
 
     @GetMapping("/list")
-    public CommonResponse list(EbookQueryRequest request){
+    public CommonResponse list(@Valid EbookQueryRequest request){
         CommonResponse<PageResponse<EbookQueryResponse>> response = new CommonResponse<>();
         PageResponse<EbookQueryResponse> ebookList = ebookService.list(request);
         response.setData(ebookList);

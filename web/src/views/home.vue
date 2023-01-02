@@ -100,7 +100,7 @@ export default defineComponent({
       axios.get("/ebook/list",{
         params:{
           pageNum: 1,
-          pageSize: 1000
+          pageSize: 999
         }
       }).then((response)=>{
         const data=response.data;
