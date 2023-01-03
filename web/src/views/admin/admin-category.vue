@@ -133,7 +133,7 @@
             console.log("原始数组：",categorys.value);
             level1.value=[];
             level1.value=Tool.array2tree(categorys.value,0);
-            console.log("树形结构：",level1);
+            console.log("树形结构：",level1.value);
           }else{
             message.error(data.message);
           }
