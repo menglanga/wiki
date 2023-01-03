@@ -34,6 +34,7 @@ public class CategoryService {
 
     public PageResponse<CategoryQueryResponse> list(CategoryQueryRequest request){
         CategoryExample categoryExample = new CategoryExample();
+        categoryExample.setOrderByClause("sort asc");
         CategoryExample.Criteria criteria = categoryExample.createCriteria();
         PageHelper.startPage(request.getPageNum(),request.getPageSize());
         List<Category> categoryList = categoryMapper.selectByExample(categoryExample);
@@ -48,6 +49,15 @@ public class CategoryService {
         response.setList(categoryResponseList);
 
         return response;
+    }
+
+
+    public List<CategoryQueryResponse> all(){
+        CategoryExample categoryExample = new CategoryExample();
+        categoryExample.setOrderByClause("sort asc");
+        List<Category> categoryList = categoryMapper.selectByExample(categoryExample);
+        List<CategoryQueryResponse> categoryResponseList= CopyUtil.copyList(categoryList, CategoryQueryResponse.class);
+        return categoryResponseList;
     }
 
     public void save(CategorySaveRequest request) {
