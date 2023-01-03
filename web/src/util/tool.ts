@@ -21,4 +21,29 @@ export class Tool{
     }
 
 
+    /**
+     * 使用递归将数组转化为树形结构，父id属性为parent
+     */
+
+    public static array2tree(array:any, parentId:number){
+        if (Tool.isEmpty(array)){
+            return [];
+        }
+        const result=[];
+        for (let i=0; i<array.length;i++){
+            const c=array[i];
+                if (Number(c.parent) === Number(parentId)){
+                    result.push(c);
+                    const children=Tool.array2tree(array,c.id);
+                        if (Tool.isNotEmpty(children)){
+                            c.children=children;
+                        }
+                }
+            }
+        return result;
+    }
+
+
+
+
 }
