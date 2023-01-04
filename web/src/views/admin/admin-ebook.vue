@@ -252,6 +252,11 @@
             level1.value=[];
             level1.value=Tool.array2tree(categorys,0);
             console.log("树形结构：",level1.value);
+            //加载完分类后在加载电子书，否则分类树加载很慢会导致电子书选人出错
+            handleQuery({
+              pageNum: 1,
+              pageSize: pagination.value.pageSize
+            });
           }else{
             message.error(data.message);
           }
@@ -270,10 +275,7 @@
 
       onMounted(()=>{
         handleQueryCategory();
-        handleQuery({
-          pageNum: 1,
-          pageSize: pagination.value.pageSize
-        });
+
       });
 
       return{
