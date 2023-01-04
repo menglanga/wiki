@@ -104,13 +104,30 @@ export default defineComponent({
     };
 
     const isShowWelcome=ref(true);
+    let category2Id=0;
+
+    const handleQueryEbook=()=>{
+      axios.get("/ebook/list",{
+        params:{
+          pageNum: 1,
+          pageSize: 999,
+          category2Id: category2Id
+        }
+      }).then((response)=>{
+        const data=response.data;
+        ebooks.value=data.data.list
+        //ebooks1.books=data.data
+      })
+    };
 
     const handleClick=(value: any)=>{
       console.log("menu click",value);
       if (value.key==='welcome') {
         isShowWelcome.value=true;
       }else {
+        category2Id=value.key;
         isShowWelcome.value=false;
+        handleQueryEbook();
       }
     };
 
@@ -119,17 +136,8 @@ export default defineComponent({
 
     onMounted(()=>{
       handleQueryCategory();
-      axios.get("/ebook/list",{
-        params:{
-          pageNum: 1,
-          pageSize: 999
-        }
-      }).then((response)=>{
-        const data=response.data;
-        ebooks.value=data.data.list
-        //ebooks1.books=data.data
-      })
-    })
+    });
+
     return {
       ebooks,
       // ebooks2:toRef(ebooks1,"books"),
