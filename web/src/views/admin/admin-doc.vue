@@ -58,14 +58,16 @@
         <a-input v-model:value="doc.name"/>
       </a-form-item>
       <a-form-item label="父文档">
-        <a-input v-model:value="doc.parent"/>
-        <a-select
-                ref="select"
+        <a-tree-select
                 v-model:value="doc.parent"
+                style="width: 100%"
+                :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+                :tree-data="treeSelectData"
+                placeholder="请选择父文档"
+                tree-default-expand-all
+                :replaceFields="{title:'name',key:'id',value: 'id',}"
         >
-          <a-select-option value="0">无</a-select-option>
-          <a-select-option v-for="c in level1" :key="c.id" :value="c.id" :disabled="doc.id ===c.id">{{c.name}}</a-select-option>
-        </a-select>
+        </a-tree-select>
       </a-form-item>
       <a-form-item label="顺序">
         <a-input v-model:value="doc.sort"/>
@@ -145,6 +147,8 @@
 
 
       //表单
+      const treeSelectData=ref();
+      treeSelectData.value=[];
       const doc=ref({});
       const modelVisible = ref(false);
       const modelLoading = ref(false);
@@ -166,10 +170,42 @@
       };
 
 
+      const  setDisable=(treeSelectData :any,id:any)=>{
+        for (let i=0;i<treeSelectData.length;i++){
+          const node=treeSelectData[i];
+          if (node.id===id){
+            console.log("disabled",node);
+            node.disabled=true;
+            const children=node.children;
+            if (Tool.isNotEmpty(children)){
+              for (let j = 0; j < children.length; j++){
+                setDisable(children,children[j].id);
+              }
+            }
+            else {
+              const children=node.children;
+              if (Tool.isNotEmpty(children)){
+                setDisable(children,children.id);
+              }
+
+            }
+          }
+        }
+      };
+
+
+
+
       //编辑
       const edit=(record: any)=>{
         modelVisible.value=true;
         doc.value=Tool.copy(record);
+        //不能选择当前节点节气所有子孙节点作为父节点
+        treeSelectData.value=Tool.copy(level1.value);
+        setDisable(treeSelectData.value,record.id);
+
+        //为选择树添加一个无
+        treeSelectData.value.unshift({id:0,name:'无'});
       };
 
       //新增
@@ -206,7 +242,8 @@
           modelLoading,
           handleModelOk,
           handleQuery,
-          doc
+          doc,
+          treeSelectData
         }
       }
     })
