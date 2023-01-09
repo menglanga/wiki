@@ -72,6 +72,9 @@
             <a-form-item label="顺序">
                 <a-input v-model:value="doc.sort"/>
             </a-form-item>
+            <a-form-item label="内容">
+                <div id="content"></div>
+            </a-form-item>
         </a-form>
     </a-modal>
 </template>
@@ -82,6 +85,7 @@
     import {message} from 'ant-design-vue';
     import {Tool} from "@/util/tool";
     import {useRoute} from "vue-router";
+    import E from "wangeditor";
 
     export default defineComponent({
         name: 'AdminDoc',
@@ -153,6 +157,7 @@
             const doc = ref({});
             const modelVisible = ref(false);
             const modelLoading = ref(false);
+            const editor=new E('#content');
 
             const handleModelOk = () => {
                 modelLoading.value = true;
@@ -227,6 +232,9 @@
 
                 //为选择树添加一个无
                 treeSelectData.value.unshift({id: 0, name: '无'});
+                setTimeout(function () {
+                    editor.create();
+                },100);
             };
 
             //新增
@@ -238,6 +246,10 @@
                 doc.value = {
                     ebookId: route.query.ebookId
                 };
+
+                setTimeout(function () {
+                    editor.create();
+                },100);
             };
 
 
