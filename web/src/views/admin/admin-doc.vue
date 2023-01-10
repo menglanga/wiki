@@ -3,7 +3,7 @@
         <a-layout-content
                 :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
         >
-            <a-row>
+            <a-row :gutter="24">
                 <a-col :span="8">
                     <p>
                         <a-form
@@ -29,29 +29,39 @@
                             :data-source="level1"
                             :pagination="false"
                             :loading="loading"
+                            size="small"
                     >
-                        <template #cover="{ text: cover }">
-                            <img v-if="cover" :src="cover" alt="avatar"/>
+                        <template #name="{ text, record }">
+                            {{record.sort}} {{text}}
                         </template>
                         <template v-slot:action="{ text, record }">
                             <a-space size="small">
-                                <a-button type="primary" @click="edit(record)">编辑</a-button>
+                                <a-button type="primary" @click="edit(record)" size="small">编辑</a-button>
                                 <a-popconfirm
                                         title="删除后不可恢复，确认删除？"
                                         ok-text="是"
                                         cancel-text="否"
                                         @confirm="handleDelete(record.id)"
                                 >
-                                    <a-button type="danger">删除</a-button>
+                                    <a-button type="danger"  size="small">删除</a-button>
                                 </a-popconfirm>
                             </a-space>
                         </template>
                     </a-table>
                 </a-col>
                 <a-col :span="16">
-                    <a-form :model="doc" :label-col="{span: 6}">
+                    <p>
+                        <a-form layout="inline" :model="param">
+                            <a-form-item>
+                                <a-button type="primary" @click="handleSave()">
+                                    保存
+                                </a-button>
+                            </a-form-item>
+                        </a-form>
+                    </p>
+                    <a-form :model="doc" layout="vertical">
                         <a-form-item label="名称">
-                            <a-input v-model:value="doc.name"/>
+                            <a-input v-model:value="doc.name" placehold="请输入文档名"/>
                         </a-form-item>
                         <a-form-item label="父文档">
                             <a-tree-select
@@ -66,7 +76,7 @@
                             </a-tree-select>
                         </a-form-item>
                         <a-form-item label="顺序">
-                            <a-input v-model:value="doc.sort"/>
+                            <a-input v-model:value="doc.sort"  placehold="请输入顺序"/>
                         </a-form-item>
                         <a-form-item label="内容">
                             <div id="content"></div>
@@ -107,17 +117,18 @@
             const columns = [
                 {
                     title: '名称',
-                    dataIndex: 'name'
+                    dataIndex: 'name',
+                    slots: {customRender: 'name'}
                 },
-                {
-                    title: '父文档',
-                    key: 'parent',
-                    dataIndex: 'parent'
-                },
-                {
-                    title: '顺序',
-                    dataIndex: 'sort',
-                },
+                // {
+                //     title: '父文档',
+                //     key: 'parent',
+                //     dataIndex: 'parent'
+                // },
+                // {
+                //     title: '顺序',
+                //     dataIndex: 'sort',
+                // },
                 {
                     title: 'Action',
                     key: 'action',
@@ -167,7 +178,9 @@
             const modelLoading = ref(false);
             const editor=new E('#content');
 
-            const handleModelOk = () => {
+            editor.config.zIndex=0;
+
+            const handleSave = () => {
                 modelLoading.value = true;
                 axios.post("/doc/save", doc.value).then((response) => {
                     modelLoading.value = false;
@@ -240,9 +253,9 @@
 
                 //为选择树添加一个无
                 treeSelectData.value.unshift({id: 0, name: '无'});
-                setTimeout(function () {
+                /*setTimeout(function () {
                     editor.create();
-                },100);
+                },100);*/
             };
 
             //新增
@@ -255,9 +268,9 @@
                     ebookId: route.query.ebookId
                 };
 
-                setTimeout(function () {
+                /*setTimeout(function () {
                     editor.create();
-                },100);
+                },100);*/
             };
 
 
@@ -275,6 +288,7 @@
 
             onMounted(() => {
                 handleQuery();
+                editor.create();
             });
 
             return {
@@ -287,7 +301,7 @@
                 handleDelete,
                 modelVisible,
                 modelLoading,
-                handleModelOk,
+                handleSave,
                 handleQuery,
                 doc,
                 treeSelectData
