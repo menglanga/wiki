@@ -2,8 +2,10 @@ package com.leihao.wiki.service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.leihao.wiki.domain.Content;
 import com.leihao.wiki.domain.Doc;
 import com.leihao.wiki.domain.DocExample;
+import com.leihao.wiki.mapper.ContentMapper;
 import com.leihao.wiki.mapper.DocMapper;
 import com.leihao.wiki.request.DocQueryRequest;
 import com.leihao.wiki.request.DocSaveRequest;
@@ -28,6 +30,9 @@ public class DocService {
 
     @Autowired
     private DocMapper docMapper;
+
+    @Autowired
+    private ContentMapper contentMapper;
 
     @Resource
     private SnowFlake snowFlake;
@@ -62,11 +67,18 @@ public class DocService {
 
     public void save(DocSaveRequest request) {
         Doc doc = CopyUtil.copy(request, Doc.class);
+        Content content=CopyUtil.copy(request,Content.class);
         if (ObjectUtils.isEmpty(request.getId())){
             doc.setId(snowFlake.nextId());
             docMapper.insert(doc);
+            content.setId(doc.getId());
+            contentMapper.insert(content);
         }else {
             docMapper.updateByPrimaryKey(doc);
+            int update=contentMapper.updateByPrimaryKeyWithBLOBs(content);
+            if (update==0){
+                contentMapper.insert(content);
+            }
         }
 
     }

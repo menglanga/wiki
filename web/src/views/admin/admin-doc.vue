@@ -176,7 +176,8 @@
             //表单
             const treeSelectData = ref();
             treeSelectData.value = [];
-            const doc = ref({});
+            const doc = ref();
+            doc.value={};
             const modelVisible = ref(false);
             const modelLoading = ref(false);
             const editor=new E('#content');
@@ -185,6 +186,7 @@
 
             const handleSave = () => {
                 modelLoading.value = true;
+                doc.value.content=editor.txt.html();
                 axios.post("/doc/save", doc.value).then((response) => {
                     modelLoading.value = false;
                     const data = response.data;
