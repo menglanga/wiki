@@ -294,8 +294,6 @@
                 //清空富文本框
                 editor.txt.html("");
                 modelVisible.value = true;
-                treeSelectData.value = Tool.copy(level1.value);
-                treeSelectData.value.unshift({id: 0, name: '无'});
 
                 doc.value = {
                     ebookId: route.query.ebookId
@@ -304,6 +302,13 @@
                 /*setTimeout(function () {
                     editor.create();
                 },100);*/
+                if (!treeSelectData.value){
+                    treeSelectData.value = [];
+                }else {
+                    treeSelectData.value = Tool.copy(level1.value);
+                }
+
+                treeSelectData.value.unshift({id: 0, name: '无'});
             };
 
 
