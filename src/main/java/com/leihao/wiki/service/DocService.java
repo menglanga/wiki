@@ -59,8 +59,9 @@ public class DocService {
     }
 
 
-    public List<DocQueryResponse> all() {
+    public List<DocQueryResponse> all(Long ebookId) {
         DocExample docExample = new DocExample();
+        docExample.createCriteria().andEbookIdEqualTo(ebookId);
         docExample.setOrderByClause("sort asc");
         List<Doc> docList = docMapper.selectByExample(docExample);
         List<DocQueryResponse> docResponseList = CopyUtil.copyList(docList, DocQueryResponse.class);

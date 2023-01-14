@@ -115,6 +115,8 @@
             param.value = {};
             const docs = ref();
             const loading = ref(false);
+            const treeSelectData=ref();
+            treeSelectData.value=[];
 
             const columns = [
                 {
@@ -155,7 +157,7 @@
             //  数据查询
             const handleQuery = () => {
                 loading.value = true;
-                axios.get("/doc/all").then((response) => {
+                axios.get("/doc/all/"+route.query.ebookId).then((response) => {
                     loading.value = false;
                     const data = response.data;
                     if (data.success) {
@@ -164,6 +166,11 @@
                         level1.value = [];
                         level1.value = Tool.array2tree(docs.value, 0);
                         console.log("树形结构：", level1.value);
+                        //父文档下拉框初始化
+                        treeSelectData.value=Tool.copy(level1.value);
+                        //为选择树添加一个无
+                        treeSelectData.value.unshift({id: 0, name: '无'});
+
                     } else {
                         message.error(data.message);
                     }
@@ -175,8 +182,6 @@
 
 
             //表单
-            const treeSelectData = ref();
-            treeSelectData.value = [];
             const doc = ref();
             doc.value={};
             const modelVisible = ref(false);
