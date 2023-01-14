@@ -1,6 +1,7 @@
 <template>
     <a-layout>
         <a-layout-content :style="{ background: '#fff',padding: '24px', margin: 0, minHeight: '280px'}">
+
            <a-row>
                <a-col :span="6">
                    <a-tree
@@ -9,12 +10,13 @@
                     @select="onSelect"
                     :replaceFields="{title: 'name', key: 'id', value: 'id'}"
                     :defaultExpandAll="true"
+                    :defaultSelectedKeys="defaultSelectedKeys"
                    >
 
                    </a-tree>
                </a-col>
                <a-col :span="18">
-
+                   <div :innerHTML="html"></div>
                </a-col>
            </a-row>
         </a-layout-content>
@@ -36,6 +38,11 @@
             const route = useRoute();
 
             const docs = ref();
+
+            const html=ref();
+
+            const defaultSelectedKeys=ref();
+            defaultSelectedKeys.value=[];
 
             // const columns = [
             //     {
@@ -73,6 +80,22 @@
             const level1 = ref();
             level1.value = [];
 
+            //  富文本内容查询
+            const handleQueryContent = (id :number) => {
+
+                axios.get("/doc/find-content/"+id).then((response) => {
+
+                    const data = response.data;
+                    if (data.success) {
+                        html.value=data.data;
+                    } else {
+                        message.error(data.message);
+                    }
+
+
+                });
+            };
+
             //  数据查询
             const handleQuery = () => {
 
@@ -84,6 +107,11 @@
 
                         level1.value = [];
                         level1.value = Tool.array2tree(docs.value, 0);
+
+                        if (Tool.isNotEmpty(level1)){
+                            defaultSelectedKeys.value=[level1.value[0].id];
+                            handleQueryContent(level1.value[0].id);
+                        }
                     } else {
                         message.error(data.message);
                     }
@@ -92,12 +120,29 @@
                 });
             };
 
+
+
+
+
+
+            const  onSelect=(selectedKeys: any , info : any)=>{
+                console.log('selected',selectedKeys,info);
+                if (Tool.isNotEmpty(selectedKeys)) {
+                    //加载内容
+                    handleQueryContent(selectedKeys[0]);
+                }
+            };
+
+
             onMounted(() => {
                 handleQuery();
             });
 
             return{
-                level1
+                level1,
+                html,
+                onSelect,
+                defaultSelectedKeys
             }
         }
     });
