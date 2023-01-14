@@ -173,6 +173,7 @@
             };
 
 
+
             //表单
             const treeSelectData = ref();
             treeSelectData.value = [];
@@ -248,10 +249,28 @@
             };
 
 
+            //  富文本内容查询
+            const handleQueryContent = () => {
+                loading.value = true;
+                axios.get("/doc/find-content/"+doc.value.id).then((response) => {
+                    loading.value = false;
+                    const data = response.data;
+                    if (data.success) {
+                        editor.txt.html(data.data)
+                    } else {
+                        message.error(data.message);
+                    }
+
+
+                });
+            };
+
+
             //编辑
             const edit = (record: any) => {
                 modelVisible.value = true;
                 doc.value = Tool.copy(record);
+                handleQueryContent();
                 //不能选择当前节点节气所有子孙节点作为父节点
                 treeSelectData.value = Tool.copy(level1.value);
                 setDisable(treeSelectData.value, record.id);
