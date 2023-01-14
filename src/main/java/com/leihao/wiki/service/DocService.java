@@ -2,6 +2,7 @@ package com.leihao.wiki.service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.github.pagehelper.util.StringUtil;
 import com.leihao.wiki.domain.Content;
 import com.leihao.wiki.domain.Doc;
 import com.leihao.wiki.domain.DocExample;
@@ -13,6 +14,7 @@ import com.leihao.wiki.response.DocQueryResponse;
 import com.leihao.wiki.response.PageResponse;
 import com.leihao.wiki.util.CopyUtil;
 import com.leihao.wiki.util.SnowFlake;
+import com.mysql.cj.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +27,7 @@ import java.util.List;
 @Service
 public class DocService {
 
-    private static final Logger LOG= LoggerFactory.getLogger(DocService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DocService.class);
 
 
     @Autowired
@@ -37,17 +39,17 @@ public class DocService {
     @Resource
     private SnowFlake snowFlake;
 
-    public PageResponse<DocQueryResponse> list(DocQueryRequest request){
+    public PageResponse<DocQueryResponse> list(DocQueryRequest request) {
         DocExample docExample = new DocExample();
         docExample.setOrderByClause("sort asc");
         DocExample.Criteria criteria = docExample.createCriteria();
-        PageHelper.startPage(request.getPageNum(),request.getPageSize());
+        PageHelper.startPage(request.getPageNum(), request.getPageSize());
         List<Doc> docList = docMapper.selectByExample(docExample);
 
-        PageInfo<Doc>pageInfo=new PageInfo<>(docList);
-        LOG.info("总行数：{}",pageInfo.getTotal());
+        PageInfo<Doc> pageInfo = new PageInfo<>(docList);
+        LOG.info("总行数：{}", pageInfo.getTotal());
 
-        List<DocQueryResponse> docResponseList= CopyUtil.copyList(docList, DocQueryResponse.class);
+        List<DocQueryResponse> docResponseList = CopyUtil.copyList(docList, DocQueryResponse.class);
 
         PageResponse<DocQueryResponse> response = new PageResponse<>();
         response.setTotal(pageInfo.getTotal());
@@ -57,26 +59,26 @@ public class DocService {
     }
 
 
-    public List<DocQueryResponse> all(){
+    public List<DocQueryResponse> all() {
         DocExample docExample = new DocExample();
         docExample.setOrderByClause("sort asc");
         List<Doc> docList = docMapper.selectByExample(docExample);
-        List<DocQueryResponse> docResponseList= CopyUtil.copyList(docList, DocQueryResponse.class);
+        List<DocQueryResponse> docResponseList = CopyUtil.copyList(docList, DocQueryResponse.class);
         return docResponseList;
     }
 
     public void save(DocSaveRequest request) {
         Doc doc = CopyUtil.copy(request, Doc.class);
-        Content content=CopyUtil.copy(request,Content.class);
-        if (ObjectUtils.isEmpty(request.getId())){
+        Content content = CopyUtil.copy(request, Content.class);
+        if (ObjectUtils.isEmpty(request.getId())) {
             doc.setId(snowFlake.nextId());
             docMapper.insert(doc);
             content.setId(doc.getId());
             contentMapper.insert(content);
-        }else {
+        } else {
             docMapper.updateByPrimaryKey(doc);
-            int update=contentMapper.updateByPrimaryKeyWithBLOBs(content);
-            if (update==0){
+            int update = contentMapper.updateByPrimaryKeyWithBLOBs(content);
+            if (update == 0) {
                 contentMapper.insert(content);
             }
         }
@@ -96,6 +98,10 @@ public class DocService {
 
     public String findContent(Long id) {
         Content content = contentMapper.selectByPrimaryKey(id);
-        return content.getContent();
+        if (ObjectUtils.isEmpty(content)) {
+            return "";
+        } else {
+            return content.getContent();
+        }
     }
 }

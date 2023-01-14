@@ -192,8 +192,8 @@
                     modelLoading.value = false;
                     const data = response.data;
                     if (data.success) {
-                        modelVisible.value = false;
-
+                        // modelVisible.value = false;
+                        message.success("保存成功！")
                         //重新加载列表
                         handleQuery();
                     } else {
@@ -268,6 +268,8 @@
 
             //编辑
             const edit = (record: any) => {
+                //清空富文本框
+                editor.txt.html("");
                 modelVisible.value = true;
                 doc.value = Tool.copy(record);
                 handleQueryContent();
@@ -284,6 +286,8 @@
 
             //新增
             const add = () => {
+                //清空富文本框
+                editor.txt.html("");
                 modelVisible.value = true;
                 treeSelectData.value = Tool.copy(level1.value);
                 treeSelectData.value.unshift({id: 0, name: '无'});
