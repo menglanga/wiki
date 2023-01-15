@@ -69,6 +69,7 @@ public class UserService {
             }
 
         }else {
+            user.setLoginName(null);
             userMapper.updateByPrimaryKey(user);
         }
 
