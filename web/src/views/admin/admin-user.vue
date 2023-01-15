@@ -87,6 +87,9 @@
     import {message} from 'ant-design-vue';
     import {Tool} from "@/util/tool";
 
+    declare let hexMd5: any;
+    declare let KEY: any;
+
     export default defineComponent({
         name: 'AdminUser',
         setup() {
@@ -167,6 +170,8 @@
 
             const handleModelOk = () => {
                 modelLoading.value = true;
+
+                user.value.password=hexMd5(user.value.password+KEY);
                 // user.value.category1Id = categoryIds.value[0];
                 // user.value.category2Id = categoryIds.value[1];
                 axios.post("/user/save", user.value).then((response) => {

@@ -7,6 +7,7 @@ import com.leihao.wiki.response.UserQueryResponse;
 import com.leihao.wiki.response.PageResponse;
 import com.leihao.wiki.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -31,6 +32,7 @@ public class UserController {
 
     @PostMapping("/save")
     public CommonResponse save( @Valid @RequestBody UserSaveRequest request){
+        request.setPassword(DigestUtils.md5DigestAsHex(request.getPassword().getBytes()));
         CommonResponse response = new CommonResponse<>();
         userService.save(request);
         return response;
