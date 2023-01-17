@@ -70,6 +70,7 @@ public class UserService {
 
         }else {
             user.setLoginName(null);
+            user.setPassword(null);
             userMapper.updateByPrimaryKeySelective(user);
         }
 
