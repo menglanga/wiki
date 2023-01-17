@@ -1,6 +1,7 @@
 package com.leihao.wiki.controller;
 
 import com.leihao.wiki.request.UserQueryRequest;
+import com.leihao.wiki.request.UserResetPasswordRequest;
 import com.leihao.wiki.request.UserSaveRequest;
 import com.leihao.wiki.response.CommonResponse;
 import com.leihao.wiki.response.UserQueryResponse;
@@ -42,6 +43,14 @@ public class UserController {
     public CommonResponse delete(@PathVariable Long id){
         CommonResponse response = new CommonResponse<>();
         userService.delete(id);
+        return response;
+    }
+
+    @PostMapping("/reset-password")
+    public CommonResponse resetPassword( @Valid @RequestBody UserResetPasswordRequest request){
+        request.setPassword(DigestUtils.md5DigestAsHex(request.getPassword().getBytes()));
+        CommonResponse response = new CommonResponse<>();
+        userService.resetPassword(request);
         return response;
     }
 

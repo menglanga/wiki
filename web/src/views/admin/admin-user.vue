@@ -44,6 +44,8 @@
                         <!--<router-link :to="'/admin/doc?userId='+record.id">
                             <a-button type="primary">用户管理</a-button>
                         </router-link>-->
+                        <a-button type="primary" @click="resetPassword(record)">重置密码</a-button>
+
                         <a-button type="primary" @click="edit(record)">编辑</a-button>
                         <a-popconfirm
                                 title="删除后不可恢复，确认删除？"
@@ -72,6 +74,22 @@
                 <a-input v-model:value="user.name"/>
             </a-form-item>
             <a-form-item label="密码"  v-show="!user.id">
+                <a-input v-model:value="user.password" />
+            </a-form-item>
+            <!--<a-form-item label="描述">
+                <a-input v-model:value="user.description" type="text"/>
+            </a-form-item>-->
+        </a-form>
+    </a-modal>
+
+    <a-modal
+            title="重置密码"
+            v-model:visible="resetModelVisible"
+            :confirm-loading="resetModelLoading"
+            @ok="handleResetModelOk"
+    >
+        <a-form :model="user" :label-col="{span: 6}">
+            <a-form-item label="新密码" >
                 <a-input v-model:value="user.password" />
             </a-form-item>
             <!--<a-form-item label="描述">
@@ -268,6 +286,45 @@
             //     return result;
             // };
 
+            //重置密码的表单
+            //数组【100,101】对应：前端开发/vue
+            // const categoryIds = ref();
+
+            const resetModelVisible = ref(false);
+            const resetModelLoading = ref(false);
+
+            const handleResetModelOk = () => {
+                resetModelLoading.value = true;
+
+                user.value.password=hexMd5(user.value.password+KEY);
+                // user.value.category1Id = categoryIds.value[0];
+                // user.value.category2Id = categoryIds.value[1];
+                axios.post("/user/reset-password", user.value).then((response) => {
+                    resetModelLoading.value = false;
+                    const data = response.data;
+                    if (data.success) {
+                        resetModelVisible.value = false;
+
+                        //重新加载列表
+                        handleQuery({
+                            pageNum: pagination.value.current,
+                            pageSize: pagination.value.pageSize
+                        });
+                    } else {
+                        message.error(data.message);
+                    }
+                });
+            };
+
+
+            //重置密码
+            const resetPassword = (record: any) => {
+                resetModelVisible.value = true;
+                user.value = Tool.copy(record);
+                user.value.password=null;
+                // categoryIds.value = [user.value.category1Id, user.value.category2Id]
+            };
+
             onMounted(() => {
                 // handleQueryCategory();
                 handleQuery({
@@ -294,6 +351,10 @@
                 handleModelOk,
                 handleQuery,
                 user,
+                handleResetModelOk,
+                resetPassword,
+                resetModelVisible,
+                resetModelLoading
                 // getCategoryName
             }
         }

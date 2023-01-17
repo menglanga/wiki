@@ -8,6 +8,7 @@ import com.leihao.wiki.exception.BusinessException;
 import com.leihao.wiki.exception.BusinessExceptionCode;
 import com.leihao.wiki.mapper.UserMapper;
 import com.leihao.wiki.request.UserQueryRequest;
+import com.leihao.wiki.request.UserResetPasswordRequest;
 import com.leihao.wiki.request.UserSaveRequest;
 import com.leihao.wiki.response.UserQueryResponse;
 import com.leihao.wiki.response.PageResponse;
@@ -74,6 +75,11 @@ public class UserService {
             userMapper.updateByPrimaryKeySelective(user);
         }
 
+    }
+
+    public void resetPassword(UserResetPasswordRequest request) {
+        User user = CopyUtil.copy(request, User.class);
+        userMapper.updateByPrimaryKeySelective(user);
     }
 
     public void delete(Long id) {
