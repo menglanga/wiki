@@ -1,6 +1,6 @@
 <template>
     <a-layout-footer style="text-align: center">
-        JAVA,你好{{user.name}}
+        JAVA<span v-if="user.id">,你好{{user.name}}</span>
     </a-layout-footer>
 </template>
 

@@ -54,7 +54,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent,ref } from 'vue';
+    import { defineComponent,ref,computed } from 'vue';
     import axios from 'axios';
     import {message} from 'ant-design-vue';
     import store from "@/store";
@@ -71,8 +71,7 @@
             });
 
             //登录后用户信息
-            const user=ref();
-            user.value={};
+            const user = computed(() => store.state.user);
 
             const loginModelVisible=ref(false);
             const loginModelLoading=ref(false);
@@ -94,8 +93,8 @@
                         loginModelVisible.value = false;
 
                         message.success("登录成功！");
-                        user.value=data.data;
-                        store.commit("setUser",user.value);
+                        // user.value=data.data;
+                        store.commit("setUser",data.data);
                     } else {
                         message.error(data.message);
                     }
