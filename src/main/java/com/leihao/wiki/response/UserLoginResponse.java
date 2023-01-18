@@ -14,6 +14,8 @@ public class UserLoginResponse {
 
     private String name;
 
+    private String token;
+
 
 
 
@@ -41,6 +43,13 @@ public class UserLoginResponse {
         this.name = name;
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     @Override
     public String toString() {
@@ -48,6 +57,7 @@ public class UserLoginResponse {
                 "id=" + id +
                 ", loginName='" + loginName + '\'' +
                 ", name='" + name + '\'' +
+                ", token='" + token + '\'' +
                 '}';
     }
 }

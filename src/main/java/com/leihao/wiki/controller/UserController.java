@@ -1,5 +1,6 @@
 package com.leihao.wiki.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.leihao.wiki.request.UserLoginRequest;
 import com.leihao.wiki.request.UserQueryRequest;
 import com.leihao.wiki.request.UserResetPasswordRequest;
@@ -9,19 +10,34 @@ import com.leihao.wiki.response.UserLoginResponse;
 import com.leihao.wiki.response.UserQueryResponse;
 import com.leihao.wiki.response.PageResponse;
 import com.leihao.wiki.service.UserService;
+import com.leihao.wiki.util.SnowFlake;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.concurrent.TimeUnit;
 
 
 @RestController
 @RequestMapping("/user")
 public class UserController {
 
+    private static final Logger LOG= LoggerFactory.getLogger(UserController.class);
+
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
+
+    @Autowired
+    private SnowFlake snowFlake;
+
+
 
 
     @GetMapping("/list")
@@ -62,6 +78,12 @@ public class UserController {
         request.setPassword(DigestUtils.md5DigestAsHex(request.getPassword().getBytes()));
         CommonResponse<UserLoginResponse> response = new CommonResponse<>();
         UserLoginResponse userLoginResponse=userService.login(request);
+
+        Long token = snowFlake.nextId();
+        LOG.info("生成单点登录token:{},存入redis",token);
+        userLoginResponse.setToken(token.toString());
+        redisTemplate.opsForValue().set(token, JSONObject.toJSONString(userLoginResponse),3600*24, TimeUnit.SECONDS);
+
         response.setData(userLoginResponse);
         return response;
     }
