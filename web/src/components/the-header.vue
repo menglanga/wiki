@@ -27,7 +27,10 @@
                 <router-link to="/about">关于我们</router-link>
             </a-menu-item>
 
-            <a class="login-menu" @click="showLoginModel">
+            <a class="login-menu" v-if="user.id">
+                <span>欢迎您，{{user.name}}</span>
+            </a>
+            <a class="login-menu" v-if="!user.id" @click="showLoginModel">
                 <span>登录</span>
             </a>
         </a-menu>
@@ -65,6 +68,11 @@
                 loginName: "",
                 password: "",
             });
+
+            //登录后用户信息
+            const user=ref();
+            user.value={};
+
             const loginModelVisible=ref(false);
             const loginModelLoading=ref(false);
             const showLoginModel=()=>{
@@ -83,7 +91,9 @@
                     const data = response.data;
                     if (data.success) {
                         loginModelVisible.value = false;
-                        message.success("登录成功！")
+
+                        message.success("登录成功！");
+                        user.value=data.data;
                     } else {
                         message.error(data.message);
                     }
@@ -95,15 +105,17 @@
                 loginModelLoading,
                 showLoginModel,
                 loginUser,
-                login
+                login,
+                user
             }
         }
     });
 </script>
 
-<style>
+<style scoped>
     .login-menu{
         float: right;
         color: white;
+        width: 120px;
     }
 </style>
