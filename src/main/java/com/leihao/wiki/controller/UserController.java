@@ -1,9 +1,11 @@
 package com.leihao.wiki.controller;
 
+import com.leihao.wiki.request.UserLoginRequest;
 import com.leihao.wiki.request.UserQueryRequest;
 import com.leihao.wiki.request.UserResetPasswordRequest;
 import com.leihao.wiki.request.UserSaveRequest;
 import com.leihao.wiki.response.CommonResponse;
+import com.leihao.wiki.response.UserLoginResponse;
 import com.leihao.wiki.response.UserQueryResponse;
 import com.leihao.wiki.response.PageResponse;
 import com.leihao.wiki.service.UserService;
@@ -54,4 +56,13 @@ public class UserController {
         return response;
     }
 
+
+    @PostMapping("/login")
+    public CommonResponse<UserLoginResponse> login( @Valid @RequestBody UserLoginRequest request){
+        request.setPassword(DigestUtils.md5DigestAsHex(request.getPassword().getBytes()));
+        CommonResponse<UserLoginResponse> response = new CommonResponse<>();
+        UserLoginResponse userLoginResponse=userService.login(request);
+        response.setData(userLoginResponse);
+        return response;
+    }
 }
