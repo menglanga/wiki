@@ -27,6 +27,17 @@
                 <router-link to="/about">关于我们</router-link>
             </a-menu-item>
 
+            <a-popconfirm
+                    title="是否退出登录？"
+                    ok-text="是"
+                    cancel-text="否"
+                    @confirm="logout()"
+            >
+                <a class="login-menu" v-if="user.id">
+                    <span>退出登录</span>
+                </a>
+            </a-popconfirm>
+
             <a class="login-menu" v-if="user.id">
                 <span>欢迎您，{{user.name}}</span>
             </a>
@@ -86,7 +97,7 @@
 
                 loginUser.value.password=hexMd5(loginUser.value.password+KEY);
 
-                axios.post("/user/login", loginUser.value).then((response) => {
+                axios.post('/user/login', loginUser.value).then((response) => {
                     loginModelLoading.value = false;
                     const data = response.data;
                     if (data.success) {
@@ -101,13 +112,28 @@
                 });
             };
 
+            const logout=()=>{
+                console.log("退出登录");
+                axios.get('/user/logout/'+ user.value.token).then((response) => {
+                    const data = response.data;
+                    if (data.success) {
+                        message.success("退出登录成功！");
+                        // user.value=data.data;
+                        store.commit("setUser",{});
+                    } else {
+                        message.error(data.message);
+                    }
+                });
+            };
+
             return{
                 loginModelVisible,
                 loginModelLoading,
                 showLoginModel,
                 loginUser,
                 login,
-                user
+                user,
+                logout
             }
         }
     });
