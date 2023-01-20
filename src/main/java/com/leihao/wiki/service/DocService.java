@@ -8,6 +8,7 @@ import com.leihao.wiki.domain.Doc;
 import com.leihao.wiki.domain.DocExample;
 import com.leihao.wiki.mapper.ContentMapper;
 import com.leihao.wiki.mapper.DocMapper;
+import com.leihao.wiki.mapper.DocMapperCustom;
 import com.leihao.wiki.request.DocQueryRequest;
 import com.leihao.wiki.request.DocSaveRequest;
 import com.leihao.wiki.response.DocQueryResponse;
@@ -32,6 +33,9 @@ public class DocService {
 
     @Autowired
     private DocMapper docMapper;
+
+    @Autowired
+    private DocMapperCustom docMapperCustom;
 
     @Autowired
     private ContentMapper contentMapper;
@@ -73,6 +77,8 @@ public class DocService {
         Content content = CopyUtil.copy(request, Content.class);
         if (ObjectUtils.isEmpty(request.getId())) {
             doc.setId(snowFlake.nextId());
+            doc.setViewCount(0);
+            doc.setVoteCount(0);
             docMapper.insert(doc);
             content.setId(doc.getId());
             contentMapper.insert(content);
@@ -99,6 +105,7 @@ public class DocService {
 
     public String findContent(Long id) {
         Content content = contentMapper.selectByPrimaryKey(id);
+        docMapperCustom.increaseViewCount(id);
         if (ObjectUtils.isEmpty(content)) {
             return "";
         } else {
