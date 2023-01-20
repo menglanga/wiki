@@ -25,6 +25,11 @@
                        <a-divider style="height: 2px; background-color: black"/>
                    </div>
                    <div :innerHTML="html"></div>
+                   <div class="vote-div">
+                       <a-button type="primary" shape="round" :size="'large'" @click="vote">
+                           <template #icon><LikeOutLined/>&nbsp;点赞:{{doc.voteCount}}</template>
+                       </a-button>
+                   </div>
                </a-col>
            </a-row>
         </a-layout-content>
@@ -148,6 +153,17 @@
                 }
             };
 
+            const vote=()=>{
+                axios.get('/doc/vote/'+doc.value.id).then((response)=>{
+                    const data=response.data;
+                    if (data.success){
+                        doc.value.voteCount++;
+                    } else{
+                        message.error(data.message);
+                    }
+                })
+            };
+
 
             onMounted(() => {
                 handleQuery();
@@ -158,7 +174,8 @@
                 html,
                 onSelect,
                 defaultSelectedKeys,
-                doc
+                doc,
+                vote
             }
         }
     });
@@ -166,3 +183,10 @@
 
 
 </script>
+
+<style>
+    .vote-div{
+        padding: 15px;
+        text-align:center;
+    }
+</style>
