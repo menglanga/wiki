@@ -130,4 +130,7 @@ public class DocService {
         }
     }
 
+    public void updateEbookInfo() {
+        docMapperCustom.updateEbookInfo();
+    }
 }
