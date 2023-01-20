@@ -6,6 +6,8 @@ import com.github.pagehelper.util.StringUtil;
 import com.leihao.wiki.domain.Content;
 import com.leihao.wiki.domain.Doc;
 import com.leihao.wiki.domain.DocExample;
+import com.leihao.wiki.exception.BusinessException;
+import com.leihao.wiki.exception.BusinessExceptionCode;
 import com.leihao.wiki.mapper.ContentMapper;
 import com.leihao.wiki.mapper.DocMapper;
 import com.leihao.wiki.mapper.DocMapperCustom;
@@ -14,6 +16,8 @@ import com.leihao.wiki.request.DocSaveRequest;
 import com.leihao.wiki.response.DocQueryResponse;
 import com.leihao.wiki.response.PageResponse;
 import com.leihao.wiki.util.CopyUtil;
+import com.leihao.wiki.util.RedisUtil;
+import com.leihao.wiki.util.RequestContext;
 import com.leihao.wiki.util.SnowFlake;
 import com.mysql.cj.util.StringUtils;
 import org.slf4j.Logger;
@@ -39,6 +43,9 @@ public class DocService {
 
     @Autowired
     private ContentMapper contentMapper;
+
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Resource
     private SnowFlake snowFlake;
@@ -114,6 +121,13 @@ public class DocService {
     }
 
     public void vote(Long id) {
-        docMapperCustom.increaseVoteCount(id);
+        //ip+docId
+        String ip = RequestContext.getRemoteAddr();
+        if (redisUtil.validateRepeat("DOC_VOTE_" + id + "_" + ip, 3600 * 24L)) {
+            docMapperCustom.increaseVoteCount(id);
+        } else {
+            throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT);
+        }
     }
+
 }

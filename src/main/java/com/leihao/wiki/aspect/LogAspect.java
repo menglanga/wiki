@@ -2,6 +2,7 @@ package com.leihao.wiki.aspect;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.support.spring.PropertyPreFilters;
+import com.leihao.wiki.util.RequestContext;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
@@ -23,14 +24,15 @@ import javax.servlet.http.HttpServletRequest;
 @Aspect
 @Component
 public class LogAspect {
-    private final static Logger LOG= LoggerFactory.getLogger(LogAspect.class);
+    private final static Logger LOG = LoggerFactory.getLogger(LogAspect.class);
 
     /*定义切点*/
     @Pointcut("execution(public * com.leihao.*.controller.*Controller.*(..))")
-    public void controllerPointcut(){}
+    public void controllerPointcut() {
+    }
 
     @Before("controllerPointcut()")
-    public void doBefore(JoinPoint joinPoint) throws Exception{
+    public void doBefore(JoinPoint joinPoint) throws Exception {
         //开始打印日志
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
@@ -38,41 +40,58 @@ public class LogAspect {
         String name = signature.getName();
         //打印请求信息
         LOG.info("------------------开始-------------------");
-        LOG.info("请求地址：{} {} ",request.getRequestURL().toString(),request.getMethod());
-        LOG.info("类名方法： {} ，{}",signature.getDeclaringTypeName(),name);
-        LOG.info("远程地址： {}",request.getRemoteAddr());
+        LOG.info("请求地址：{} {} ", request.getRequestURL().toString(), request.getMethod());
+        LOG.info("类名方法： {} ，{}", signature.getDeclaringTypeName(), name);
+        LOG.info("远程地址： {}", request.getRemoteAddr());
+        RequestContext.setRemoteAddr(getRemoteIp(request));
+
 
         //打印请求参数
         Object[] args = joinPoint.getArgs();
-        LOG.info("请求参数：{}",JSONObject.toJSONString(args));
+        LOG.info("请求参数：{}", JSONObject.toJSONString(args));
 
-        Object[] arguments=new Object[args.length];
-        for (int i=0;i<args.length;i++){
-            if (args[i] instanceof ServletRequest || args[i] instanceof ServletResponse || args[i] instanceof MultipartFile){
+        Object[] arguments = new Object[args.length];
+        for (int i = 0; i < args.length; i++) {
+            if (args[i] instanceof ServletRequest || args[i] instanceof ServletResponse || args[i] instanceof MultipartFile) {
                 continue;
             }
-            arguments[i]=args[i];
+            arguments[i] = args[i];
         }
         //排除字段，敏感字段或太长的字段不显示
-        String[] excludeProperties={"password","file"};
+        String[] excludeProperties = {"password", "file"};
         PropertyPreFilters filters = new PropertyPreFilters();
-        PropertyPreFilters.MySimplePropertyPreFilter excludeFilter =filters.addFilter();
+        PropertyPreFilters.MySimplePropertyPreFilter excludeFilter = filters.addFilter();
         excludeFilter.addExcludes(excludeProperties);
-        LOG.info("请求参数：{}",JSONObject.toJSONString(arguments,excludeFilter));
+        LOG.info("请求参数：{}", JSONObject.toJSONString(arguments, excludeFilter));
     }
+
 
     @Around("controllerPointcut()")
     public Object doAround(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         long startTime = System.currentTimeMillis();
         Object o = proceedingJoinPoint.proceed();
-        String[] excludeProperties={"password","file"};
+        String[] excludeProperties = {"password", "file"};
         PropertyPreFilters filters = new PropertyPreFilters();
-        PropertyPreFilters.MySimplePropertyPreFilter excludeFilter =filters.addFilter();
+        PropertyPreFilters.MySimplePropertyPreFilter excludeFilter = filters.addFilter();
         excludeFilter.addExcludes(excludeProperties);
-        LOG.info("返回结果：{}",JSONObject.toJSONString(o,excludeFilter));
-        LOG.info("---------------结束 耗时： {}ms--------------",System.currentTimeMillis()-startTime);
+        LOG.info("返回结果：{}", JSONObject.toJSONString(o, excludeFilter));
+        LOG.info("---------------结束 耗时： {}ms--------------", System.currentTimeMillis() - startTime);
         return o;
 
+    }
+
+    private String getRemoteIp(HttpServletRequest request){
+        String ip = request.getHeader("x-forwarded-for");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        return ip;
     }
 
 }
