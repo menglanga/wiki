@@ -18,6 +18,9 @@ public class DocJob {
 
     @Scheduled(cron = "*/2 * * * * ?")
     public void updateEbookInfo()  {
+        LOG.info("更新电子书信息开始：");
+        long start = System.currentTimeMillis();
         docService.updateEbookInfo();
+        LOG.info("更新电子书信息结束,耗时：{}ms",System.currentTimeMillis()-start);
     }
 }
