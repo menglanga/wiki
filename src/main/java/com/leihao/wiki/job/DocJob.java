@@ -20,7 +20,7 @@ public class DocJob {
     @Autowired
     private SnowFlake snowFlake;
 
-    @Scheduled(cron = "*/2 * * * * ?")
+    @Scheduled(cron = "*/30 * * * * ?")
     public void updateEbookInfo()  {
         MDC.put("LOG_ID", String.valueOf(snowFlake.nextId()));
         LOG.info("更新电子书信息开始：");

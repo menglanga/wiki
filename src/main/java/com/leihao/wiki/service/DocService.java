@@ -23,6 +23,7 @@ import com.leihao.wiki.websocket.WebSocketServer;
 import com.mysql.cj.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -52,7 +53,8 @@ public class DocService {
     private SnowFlake snowFlake;
 
     @Autowired
-    private WebSocketServer webSocketServer;
+    private WebSocketService webSocketService;
+
 
     public PageResponse<DocQueryResponse> list(DocQueryRequest request) {
         DocExample docExample = new DocExample();
@@ -133,7 +135,8 @@ public class DocService {
             throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT);
         }
         Doc docDB = docMapper.selectByPrimaryKey(id);
-        webSocketServer.sendInfo("【"+docDB.getName()+"】被点赞了！");
+        String logId = MDC.get("LOG_ID");
+        webSocketService.sendInfo("【"+docDB.getName()+"】被点赞了！",logId);
 
     }
 
