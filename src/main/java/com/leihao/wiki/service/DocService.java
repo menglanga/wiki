@@ -58,8 +58,8 @@ public class DocService {
     @Autowired
     private WebSocketService webSocketService;
 
-    @Autowired
-    private RocketMQTemplate rocketMQTemplate;
+//    @Autowired
+//    private RocketMQTemplate rocketMQTemplate;
 
 
     public PageResponse<DocQueryResponse> list(DocQueryRequest request) {
@@ -136,15 +136,15 @@ public class DocService {
     public void vote(Long id) {
         //ip+docId
         String ip = RequestContext.getRemoteAddr();
-        if (redisUtil.validateRepeat("DOC_VOTE_" + id + "_" + ip, 5L)) {
+        if (redisUtil.validateRepeat("DOC_VOTE_" + id + "_" + ip, 1L)) {
             docMapperCustom.increaseVoteCount(id);
         } else {
             throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT);
         }
         Doc docDB = docMapper.selectByPrimaryKey(id);
         String logId = MDC.get("LOG_ID");
-//        webSocketService.sendInfo("【"+docDB.getName()+"】被点赞了！",logId);
-        rocketMQTemplate.convertAndSend("VOTE_TOPIC","【"+docDB.getName()+"】被点赞了！");
+        webSocketService.sendInfo("【"+docDB.getName()+"】被点赞了！",logId);
+//        rocketMQTemplate.convertAndSend("VOTE_TOPIC","【"+docDB.getName()+"】被点赞了！");
 
     }
 
