@@ -19,6 +19,7 @@ import com.leihao.wiki.util.CopyUtil;
 import com.leihao.wiki.util.RedisUtil;
 import com.leihao.wiki.util.RequestContext;
 import com.leihao.wiki.util.SnowFlake;
+import com.leihao.wiki.websocket.WebSocketServer;
 import com.mysql.cj.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +50,9 @@ public class DocService {
 
     @Resource
     private SnowFlake snowFlake;
+
+    @Autowired
+    private WebSocketServer webSocketServer;
 
     public PageResponse<DocQueryResponse> list(DocQueryRequest request) {
         DocExample docExample = new DocExample();
@@ -128,6 +132,9 @@ public class DocService {
         } else {
             throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT);
         }
+        Doc docDB = docMapper.selectByPrimaryKey(id);
+        webSocketServer.sendInfo("【"+docDB.getName()+"】被点赞了！");
+
     }
 
     public void updateEbookInfo() {

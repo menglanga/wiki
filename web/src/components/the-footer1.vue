@@ -8,6 +8,7 @@
     import {defineComponent, computed,onMounted} from 'vue';
     import store from "@/store";
     import {Tool} from "@/util/tool";
+    import { notification } from 'ant-design-vue';
 
     export default defineComponent({
         name: 'the-footer1',
@@ -22,6 +23,11 @@
 
             const onMessage=(event:any)=>{
                 console.log('websocket收到消息',event.data);
+                notification['info']({
+                    message: '收到消息',
+                    description: event.data
+                });
+
             };
 
             const onError=()=>{
