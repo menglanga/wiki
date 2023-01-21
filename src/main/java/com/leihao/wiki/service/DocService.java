@@ -21,10 +21,12 @@ import com.leihao.wiki.util.RequestContext;
 import com.leihao.wiki.util.SnowFlake;
 import com.leihao.wiki.websocket.WebSocketServer;
 import com.mysql.cj.util.StringUtils;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -55,6 +57,9 @@ public class DocService {
 
     @Autowired
     private WebSocketService webSocketService;
+
+    @Autowired
+    private RocketMQTemplate rocketMQTemplate;
 
 
     public PageResponse<DocQueryResponse> list(DocQueryRequest request) {
@@ -131,14 +136,15 @@ public class DocService {
     public void vote(Long id) {
         //ip+docId
         String ip = RequestContext.getRemoteAddr();
-        if (redisUtil.validateRepeat("DOC_VOTE_" + id + "_" + ip, 3600 * 24L)) {
+        if (redisUtil.validateRepeat("DOC_VOTE_" + id + "_" + ip, 5L)) {
             docMapperCustom.increaseVoteCount(id);
         } else {
             throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT);
         }
         Doc docDB = docMapper.selectByPrimaryKey(id);
         String logId = MDC.get("LOG_ID");
-        webSocketService.sendInfo("【"+docDB.getName()+"】被点赞了！",logId);
+//        webSocketService.sendInfo("【"+docDB.getName()+"】被点赞了！",logId);
+        rocketMQTemplate.convertAndSend("VOTE_TOPIC","【"+docDB.getName()+"】被点赞了！");
 
     }
 
