@@ -38,7 +38,7 @@ public class LogAspect {
     }
 
     @Before("controllerPointcut()")
-    public void doBefore(JoinPoint joinPoint) throws Exception {
+    public void doBefore(JoinPoint joinPoint) {
 
         MDC.put("LOG_ID", String.valueOf(snowFlake.nextId()));
         //开始打印日志
