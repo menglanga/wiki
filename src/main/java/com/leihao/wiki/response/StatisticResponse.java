@@ -1,8 +1,12 @@
 package com.leihao.wiki.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Date;
 
 public class StatisticResponse {
+
+    @JsonFormat(pattern = "MM-dd", timezone = "GMT+8")
     private Date date;
 
     private Integer viewCount;

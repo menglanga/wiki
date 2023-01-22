@@ -12,4 +12,7 @@ public interface EbookSnapshotMapperCustom {
     void doSnapshot();
 
     List<StatisticResponse> getStatistic();
+
+    List<StatisticResponse> get30Statistic();
+
 }
