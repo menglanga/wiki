@@ -167,7 +167,7 @@
                         level1.value = Tool.array2tree(docs.value, 0);
                         console.log("树形结构：", level1.value);
                         //父文档下拉框初始化
-                        treeSelectData.value=Tool.copy(level1.value);
+                        treeSelectData.value=Tool.copy(level1.value)||[];
                         //为选择树添加一个无
                         treeSelectData.value.unshift({id: 0, name: '无'});
 
@@ -281,7 +281,7 @@
                 doc.value = Tool.copy(record);
                 handleQueryContent();
                 //不能选择当前节点节气所有子孙节点作为父节点
-                treeSelectData.value = Tool.copy(level1.value);
+                treeSelectData.value = Tool.copy(level1.value) ||[];
                 setDisable(treeSelectData.value, record.id);
 
                 //为选择树添加一个无
@@ -307,7 +307,7 @@
                 if (!treeSelectData.value){
                     treeSelectData.value = [];
                 }else {
-                    treeSelectData.value = Tool.copy(level1.value);
+                    treeSelectData.value = Tool.copy(level1.value)||[];
                 }
 
                 treeSelectData.value.unshift({id: 0, name: '无'});

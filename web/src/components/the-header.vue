@@ -1,6 +1,6 @@
 <template>
     <a-layout-header class="header">
-        <div class="logo" />
+        <div class="logo"></div>
         <a-menu
                 theme="dark"
                 mode="horizontal"
@@ -141,8 +141,9 @@
 
 <style scoped>
     .login-menu{
-        float: right;
+        float: right ;
         color: white;
         width: 120px;
     }
+
 </style>
